@@ -6,7 +6,7 @@ Welcome to my GitHub profile! Here's a little bit about me:
 ![Wave](https://telegra.ph/file/fe1c8aefdc227e7367e00.gif)
 
 <div align="center">
-  <img src="https://github.com/hafizzxyc/database/main/20250221_215257.jpg" alt="Loading..." width="50"/>
+  <img src="https://github.com/hafizzxyc/database/blob/main/20250221_215257.jpg" alt="Loading..." width="50"/>
 </div>
 # MY CONTACT
 <hr>
