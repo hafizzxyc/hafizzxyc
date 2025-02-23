@@ -9,7 +9,23 @@ Welcome to my GitHub profile! Here's a little bit about me:
   <img src="https://github.com/mitul3737/mitul3737/blob/main/Wave.gif" alt="Loading..." width="50"/>
 </div>
 # MY CONTACT
-```y```
+<hr>
+
+```java
+const contact = {
+  message: {
+    contantMessage: {
+      whatsapp_number: "wa.me/6281360773542",
+      telegram: "t.me/beggarscak",
+      github: "https://github.com/hafizzxyc",
+      tiktok: "https://tiktok.com/@hafizzxyc",
+    }
+  }
+};
+    
+```
+<hr>
+
 # MY INFORMATION
 - 👯 Saya Memiliki Ketertarikan Pada Coding Seperti Website, Bot WhatsApp, Bot Telegram, Dll.
 - 🤔 Saya Melakukan Coding Dengan Bantuan ChatGPT
