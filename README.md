@@ -8,7 +8,8 @@ Welcome to my GitHub profile! Here's a little bit about me:
 <div align="center">
   <img src="https://github.com/mitul3737/mitul3737/blob/main/Wave.gif" alt="Loading..." width="50"/>
 </div>
-
+# MY CONTACT
+```y```
 # MY INFORMATION
 - 👯 Saya Memiliki Ketertarikan Pada Coding Seperti Website, Bot WhatsApp, Bot Telegram, Dll.
 - 🤔 Saya Melakukan Coding Dengan Bantuan ChatGPT
