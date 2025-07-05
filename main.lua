@@ -1,16 +1,28 @@
+-- Apiess GUI + Brainrot Support (Revisi Aman untuk Steal a Brainrot)
+
+-- == ANTI-KICK == --
+local mt = getrawmetatable(game)
+local old = mt.__namecall
+setreadonly(mt, false)
+mt.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    if method == "Kick" or method == "kick" then
+        warn("[Apiess] Kick attempt blocked!")
+        return
+    end
+    return old(self, ...)
+end)
+setreadonly(mt, true)
 
 -- == SERVICES == --
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local TeleportService = game:GetService("TeleportService")
 local StarterGui = game:GetService("StarterGui")
-local HttpService = game:GetService("HttpService")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 
--- == PLAYER == --
 local player = Players.LocalPlayer
 local char, root, humanoid
 
@@ -25,19 +37,18 @@ player.CharacterAdded:Connect(function()
     updateCharacter()
 end)
 
--- == GUI UTAMA: APIESS GUI == --
+-- == GUI == --
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "ApiessGUI"
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 270, 0, 540)
-frame.Position = UDim2.new(0, 20, 0.5, -270)
+frame.Size = UDim2.new(0, 270, 0, 580)
+frame.Position = UDim2.new(0, 20, 0.5, -290)
 frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.BorderSizePixel = 0
 frame.Draggable = true
 frame.Active = true
 frame.BackgroundTransparency = 0.05
-frame.ClipsDescendants = true
 
 local uiCorner = Instance.new("UICorner", frame)
 uiCorner.CornerRadius = UDim.new(0, 10)
@@ -75,7 +86,7 @@ local function addButton(text, callback)
     yOffset = yOffset + 40
 end
 
--- == FITUR: ANTI STUN == --
+-- == FITUR == --
 local function antiStun()
     if humanoid then
         humanoid.StateChanged:Connect(function(_, new)
@@ -86,7 +97,6 @@ local function antiStun()
     end
 end
 
--- == FITUR: AUTO REVIVE == --
 local function autoRevive()
     RunService.Heartbeat:Connect(function()
         if player.Character and player.Character:FindFirstChild("Downed") then
@@ -95,7 +105,6 @@ local function autoRevive()
     end)
 end
 
--- == FITUR: ESP ZOMBIE/PLAYER == --
 local function brainESP()
     for _,v in pairs(workspace:GetDescendants()) do
         if v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") and not v:FindFirstChild("ApiessESP") then
@@ -108,7 +117,6 @@ local function brainESP()
     end
 end
 
--- == FITUR: ANTI FLASH/SLOW == --
 local function antiFlash()
     player.PlayerGui.ChildAdded:Connect(function(c)
         if c.Name:lower():find("flash") or c.Name:lower():find("slow") then
@@ -118,16 +126,14 @@ local function antiFlash()
     end)
 end
 
--- == FITUR: TOGGLE SPEED == --
 local speedOn = false
 local function toggleSpeed()
     speedOn = not speedOn
     if humanoid then
-        humanoid.WalkSpeed = speedOn and 30 or 16
+        humanoid.WalkSpeed = speedOn and 28 or 16
     end
 end
 
--- == FITUR: NIGHT VISION == --
 local nvEnabled = false
 local function toggleNightVision()
     nvEnabled = not nvEnabled
@@ -136,10 +142,9 @@ local function toggleNightVision()
     Lighting.Ambient = nvEnabled and Color3.fromRGB(200, 255, 200) or Color3.fromRGB(70, 70, 70)
 end
 
--- == AIMBOT ZOMBIE == --
-local function getClosestZombie()
+local function getClosestEnemy()
     if not root then return nil end
-    local closest, minDist = nil, 50
+    local closest, minDist = nil, 60
     for _, model in pairs(workspace:GetDescendants()) do
         if model:IsA("Model") and model:FindFirstChild("HumanoidRootPart") and model.Name:lower():find("zombie") then
             local dist = (root.Position - model.HumanoidRootPart.Position).Magnitude
@@ -152,10 +157,6 @@ local function getClosestZombie()
     return closest
 end
 
--- == AUTO AIMBOT + ATTACK == --
-local autoAttackEnabled = false
-local autoAttackConn
-
 local function attackTarget(target)
     local tool = player.Character and player.Character:FindFirstChildOfClass("Tool")
     if tool then
@@ -163,11 +164,13 @@ local function attackTarget(target)
     end
 end
 
+local autoAttackEnabled = false
+local autoAttackConn
 local function toggleAutoAttack()
     autoAttackEnabled = not autoAttackEnabled
     if autoAttackEnabled then
         autoAttackConn = RunService.RenderStepped:Connect(function()
-            local target = getClosestZombie()
+            local target = getClosestEnemy()
             if target and target:FindFirstChild("Humanoid") and target.Humanoid.Health > 0 then
                 root.CFrame = CFrame.lookAt(root.Position, Vector3.new(target.HumanoidRootPart.Position.X, root.Position.Y, target.HumanoidRootPart.Position.Z))
                 attackTarget(target)
@@ -178,10 +181,8 @@ local function toggleAutoAttack()
     end
 end
 
--- == FITUR: FLY == --
 local flyEnabled = false
 local flyVelocity
-
 local function toggleFly()
     flyEnabled = not flyEnabled
     if flyEnabled then
@@ -195,11 +196,11 @@ local function toggleFly()
             RunService.RenderStepped:Connect(function()
                 if flyEnabled and flyVelocity then
                     local moveVec = Vector3.new()
-                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveVec = moveVec + (workspace.CurrentCamera.CFrame.LookVector) end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveVec = moveVec - (workspace.CurrentCamera.CFrame.LookVector) end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveVec = moveVec - (workspace.CurrentCamera.CFrame.RightVector) end
-                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveVec = moveVec + (workspace.CurrentCamera.CFrame.RightVector) end
-                    flyVelocity.Velocity = moveVec.Unit * 100
+                    if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveVec = moveVec + workspace.CurrentCamera.CFrame.LookVector end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveVec = moveVec - workspace.CurrentCamera.CFrame.LookVector end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveVec = moveVec - workspace.CurrentCamera.CFrame.RightVector end
+                    if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveVec = moveVec + workspace.CurrentCamera.CFrame.RightVector end
+                    flyVelocity.Velocity = moveVec.Unit * 90
                 end
             end)
         end
@@ -210,15 +211,13 @@ local function toggleFly()
     end
 end
 
--- == AUTO FARM (ZOMBIE) == --
 local autoFarmEnabled = false
 local autoFarmConn
-
 local function toggleAutoFarm()
     autoFarmEnabled = not autoFarmEnabled
     if autoFarmEnabled then
         autoFarmConn = RunService.RenderStepped:Connect(function()
-            local target = getClosestZombie()
+            local target = getClosestEnemy()
             if target and target:FindFirstChild("Humanoid") and target.Humanoid.Health > 0 then
                 root.CFrame = target.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
                 attackTarget(target)
@@ -229,7 +228,7 @@ local function toggleAutoFarm()
     end
 end
 
--- == TOMBOL APIESS == --
+-- == TOMBOL GUI == --
 addButton("✅ Anti Stun", antiStun)
 addButton("💖 Auto Revive", autoRevive)
 addButton("🔦 ESP (Zombie & Player)", brainESP)
@@ -238,13 +237,13 @@ addButton("🚫 Anti Flash/Slow", antiFlash)
 addButton("🗡️ Auto Attack + Aimbot", toggleAutoAttack)
 addButton("🕊️ Toggle Fly", toggleFly)
 addButton("🌙 Night Vision", toggleNightVision)
-addButton("💰 Auto Farm Zombie", toggleAutoFarm)
+addButton("💰 Auto Farm", toggleAutoFarm)
 
 -- == NOTIFIKASI == --
 pcall(function()
     StarterGui:SetCore("SendNotification", {
         Title = "✅ Apiess GUI Aktif",
-        Text = "Brainrot mode: ON. Siap mengacak-acak zombie!",
+        Text = "Steal a Brainrot mode: Aman & Siap Farming!",
         Duration = 6
     })
 end)
